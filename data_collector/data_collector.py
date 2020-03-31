@@ -1,54 +1,32 @@
-from bs4 import BeautifulSoup
 import requests
-import json
-
-API_URL = "https://pypi.org/"
-package_counter_limit = 100
-
-
-class Package():
-
-    name = ""
-    version = ""
-    description = ""
-    project_url = ""
-    downloads = ""
-
-    def __init__(self, name, version, description, project_url, downloads=0):
-        self.name = name
-        self.version = version
-        self.description = description
-        self.project_url = project_url
-        self.downloads = downloads
-
-    def __str__(self):
-        return "Package: {}, version: {}".format(self.name, self.version)
-
+from bs4 import BeautifulSoup
+import conf
+from Package import Package, handle_single_package
+from meili_indexer import get_or_create_meilisearch_index
 
 if __name__ == ("__main__"):
 
-    package_list_response = requests.get(API_URL + "/simple/")
-    soup = BeautifulSoup(package_list_response.text, "html.parser")
     package_list = []
+    pkg_errors = []
 
-    for link in soup.find_all('a'):
-        name = link.get_text()
-        req = requests.get("https://pypi.org/pypi/" + name + "/json")
-        if req.status_code == 200:
-            try:
-                json_data = json.loads(req.text)["info"]
-                package = Package(
-                    name = json_data["name"],
-                    version = json_data["version"],
-                    description = json_data["description"],
-                    project_url = json_data["project_url"],
-                )
-                package_list.append(package)
-                print(package)
-            except Exception as e:
-                print("ERROR ({}): {}".format(name, e))
-        if len(package_list) >= package_counter_limit:
+    # Create a Meilisearch index
+    index = get_or_create_meilisearch_index()
+    if index is None:
+        exit("ERROR: Couldn't create a Meilisearch index")
+
+    # Get a list of PyPI available packages
+    pkg_list_response = requests.get(conf.SIMPLE_API_URL)
+    soup = BeautifulSoup(pkg_list_response.text, "html.parser")
+    all_pkg = soup.find_all('a')
+
+    # Handle a single package
+    for pkg_link in all_pkg:
+        pkg_name = pkg_link.get_text()
+        handle_single_package(pkg_name, package_list, pkg_errors)
+        if conf.pkg_count_limit is not None and len(package_list) >= conf.pkg_count_limit:
             break
 
-
+    # Log information to console
     print("Package count:", len(package_list))
+    if len(pkg_errors) > 0 :
+        print("Couldn't find following packages:", pkg_errors)
