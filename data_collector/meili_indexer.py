@@ -1,8 +1,9 @@
 import conf
 import meilisearch
 
+# TODO: Error handling
 def get_or_create_meilisearch_index():
-    # TODO: Error handling
+    
     if (conf.PYPI_MEILISEARCH_URL is None or conf.PYPI_MEILISEARCH_KEY is None):
         exit("""
             ERROR:
@@ -13,17 +14,13 @@ def get_or_create_meilisearch_index():
             """)
     client = meilisearch.Client(conf.PYPI_MEILISEARCH_URL, conf.PYPI_MEILISEARCH_KEY)
     try :
-        index = client.create_index(conf.INDEX_UUID)
+        index = client.create_index(conf.INDEX_UUID, primary_key="name")
         return index
     except Exception as e:
-        # Couldn't create index
         print("ERROR: Couldn't create index", e)
-        pass
     try :
         index = client.get_index(conf.INDEX_UUID)
         return index
     except Exception as e:
-        # Couldn't get index
         print("ERROR: Couldn't get index", e)
-        pass
     return None
