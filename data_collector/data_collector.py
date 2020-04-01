@@ -1,9 +1,9 @@
 import requests
-import json
-from bs4 import BeautifulSoup
 import conf
+
+from bs4 import BeautifulSoup
 from Package import Package
-from meili_indexer import get_or_create_meilisearch_index
+from meili_index import get_or_create_meilisearch_index
 
 if __name__ == ("__main__"):
 
@@ -30,14 +30,14 @@ if __name__ == ("__main__"):
         try:
             index.add_documents([pkg.__dict__])
             indexed_counter += 1
-            indexed_counter
         except Exception as e:
             print("ERROR INDEXING:", e)
         print("{:7}: {}".format(indexed_counter, pkg))
-        if conf.pkg_count_limit is not None and indexed_counter >= conf.pkg_count_limit:
-            break
+        if conf.pkg_count_limit is not None:
+            if indexed_counter >= conf.pkg_count_limit:
+                break
 
     # Log information to console
     print("Updated package count:", indexed_counter)
-    if len(pkg_errors) > 0 :
+    if len(pkg_errors) > 0:
         print("Couldn't find/update following packages:", pkg_errors)

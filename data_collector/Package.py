@@ -2,6 +2,7 @@ import conf
 import requests
 import json
 
+
 class Package():
 
     name = ""

@@ -5,8 +5,8 @@ pkg_count_limit = None
 
 # MeiliSearch params
 INDEX_UUID = "PYPIPKG"
-PYPI_MEILISEARCH_URL = os.getenv('PYPI_MEILISEARCH_URL')
-PYPI_MEILISEARCH_KEY = os.getenv('PYPI_MEILISEARCH_KEY')
+PYPI_MEILI_URL = os.getenv('PYPI_MEILI_URL')
+PYPI_MEILI_KEY = os.getenv('PYPI_MEILI_KEY')
 
 # Data sources
 SIMPLE_API_URL = "https://pypi.org/simple/"
