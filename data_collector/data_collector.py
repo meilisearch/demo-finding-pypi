@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import conf
-from Package import Package, handle_single_package
+from Package import Package
 from meili_indexer import get_or_create_meilisearch_index
 
 if __name__ == ("__main__"):
@@ -21,12 +21,18 @@ if __name__ == ("__main__"):
 
     # Handle a single package
     for pkg_link in all_pkg:
-        pkg_name = pkg_link.get_text()
-        handle_single_package(pkg_name, package_list, pkg_errors)
+        pkg = Package(pkg_link.get_text())
+        pkg, update_status = pkg.update_pypi_data()
+        if update_status is conf.STATUS_ERR:
+            pkg_errors.append(pkg.name)
+            continue
+        package_list.append(pkg)
+        counter = len(package_list) - 1
+        print("{:7}: {}".format(counter, package_list[counter]))
         if conf.pkg_count_limit is not None and len(package_list) >= conf.pkg_count_limit:
             break
 
     # Log information to console
-    print("Package count:", len(package_list))
+    print("Updated package count:", len(package_list))
     if len(pkg_errors) > 0 :
-        print("Couldn't find following packages:", pkg_errors)
+        print("Couldn't find/update following packages:", pkg_errors)
