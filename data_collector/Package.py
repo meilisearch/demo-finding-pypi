@@ -25,7 +25,7 @@ class Package():
 
         self.name = json_data["name"]
         self.version = json_data["version"]
-        self.description = json_data["description"]
+        self.description = json_data["summary"]
         self.project_url = json_data["project_url"]
 
     def update_pypi_data(self):
