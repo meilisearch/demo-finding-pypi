@@ -1,10 +1,12 @@
 import conf
 import requests
 import json
+import hashlib
 
 
 class Package():
 
+    _id = ""
     name = ""
     version = ""
     description = ""
@@ -13,8 +15,10 @@ class Package():
     downloads = 0
 
     def __init__(self, name):
-
         self.name = name
+        md5t = hashlib.md5()
+        md5t.update(name.encode('utf-8'))
+        self._id = md5t.hexdigest()
         self.json_data_url = "{}{}/json".format(conf.PYPI_API_URL, self.name)
 
     def __str__(self):

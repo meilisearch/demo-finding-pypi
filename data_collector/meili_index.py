@@ -16,7 +16,7 @@ def get_or_create_meilisearch_index():
             """)
     client = meilisearch.Client(conf.PYPI_MEILI_URL, conf.PYPI_MEILI_KEY)
     try:
-        index = client.create_index(conf.INDEX_UUID, primary_key="name")
+        index = client.create_index(conf.INDEX_UUID)
         return index
     except Exception as e:
         print("ERROR: Couldn't create index", e)

@@ -5,9 +5,24 @@ from bs4 import BeautifulSoup
 from Package import Package
 from meili_index import get_or_create_meilisearch_index
 
+def index_packages(pkg_to_index):
+    try:
+        pkgs = []
+        for pkg in pkg_to_index:
+            pkgs.append(pkg.__dict__)
+        print(pkgs)
+        resp = index.add_documents(pkgs)
+        print(resp)
+    except Exception as e:
+        print("ERROR INDEXING:", e)
+        return 0
+    print("Indexed: {}".format(pkg_to_index))
+    return len(pkg_to_index)
+
 if __name__ == ("__main__"):
 
     indexed_counter = 0
+    pkg_to_index = []
     pkg_errors = []
 
     # Create a Meilisearch index
@@ -27,15 +42,14 @@ if __name__ == ("__main__"):
         if update_status is conf.STATUS_ERR:
             pkg_errors.append(pkg.name)
             continue
-        try:
-            index.add_documents([pkg.__dict__])
-            indexed_counter += 1
-        except Exception as e:
-            print("ERROR INDEXING:", e)
-        print("{:7}: {}".format(indexed_counter, pkg))
-        if conf.pkg_count_limit is not None:
-            if indexed_counter >= conf.pkg_count_limit:
-                break
+        pkg_to_index.append(pkg)
+        if len(pkg_to_index) >= conf.pkg_indexing_batch_size or \
+            pkg_link == all_pkg[len(all_pkg) - 1]:
+            indexed_counter += index_packages(pkg_to_index)
+            pkg_to_index = []
+            if conf.pkg_count_limit is not None:
+                if indexed_counter >= conf.pkg_count_limit:
+                    break
 
     # Log information to console
     print("Updated package count:", indexed_counter)
