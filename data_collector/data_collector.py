@@ -10,13 +10,12 @@ def index_packages(pkg_to_index):
         pkgs = []
         for pkg in pkg_to_index:
             pkgs.append(pkg.__dict__)
-        print(pkgs)
         resp = index.add_documents(pkgs)
         print(resp)
     except Exception as e:
         print("ERROR INDEXING:", e)
         return 0
-    print("Indexed: {}".format(pkg_to_index))
+    print("Sent to index: {} packages".format(len(pkg_to_index)))
     return len(pkg_to_index)
 
 if __name__ == ("__main__"):
@@ -33,7 +32,7 @@ if __name__ == ("__main__"):
     # Get a list of PyPI available packages
     pkg_list_response = requests.get(conf.SIMPLE_API_URL)
     soup = BeautifulSoup(pkg_list_response.text, "html.parser")
-    all_pkg = soup.find_all('a')
+    all_pkg = soup.find_all('a')[conf.pkg_list_offset:]
 
     # Handle a single package
     for pkg_link in all_pkg:
@@ -46,6 +45,7 @@ if __name__ == ("__main__"):
         if len(pkg_to_index) >= conf.pkg_indexing_batch_size or \
             pkg_link == all_pkg[len(all_pkg) - 1]:
             indexed_counter += index_packages(pkg_to_index)
+            print("Packages trated: {}/{}".format(indexed_counter, len(all_pkg)))
             pkg_to_index = []
             if conf.pkg_count_limit is not None:
                 if indexed_counter >= conf.pkg_count_limit:
