@@ -24,7 +24,7 @@ async def single_pkg_req(pkg, channel):
         await pkg.update_pypi_data()
         await channel.put(pkg)
     except Exception as e:
-        print(e)
+        await channel.put(None)
 
 
 async def main():
@@ -44,17 +44,18 @@ async def main():
     for pkg_link in pkg_list:
         pkg = Package(pkg_link.get_text())
         await scheduler.spawn(single_pkg_req(pkg, channel))
+    ct = 0
     async for pkg in channel:
-        all_pkg.append(pkg)
-        if len(all_pkg) >= conf.pkg_indexing_batch_size:
+        ct += 1
+        if pkg is not None :
+            all_pkg.append(pkg)
+        if len(all_pkg) >= conf.pkg_indexing_batch_size or ct == len(pkg_list):
             batch = all_pkg[:conf.pkg_indexing_batch_size]
             all_pkg = all_pkg[conf.pkg_indexing_batch_size:]
             indexed_counter += index_packages(batch, index)
             print("Packages treated: {}".format(indexed_counter))
-asyncio.get_event_loop().run_until_complete(main())
+        if ct == len(pkg_list):
+            break
+    print("FINI!!!")
 
-# https://github.com/Kerollmops/meili-crates/blob/master/src/bin/full_update.rs#L12-L40
-# https://github.com/aio-libs/aiohttp/blob/master/examples/client_json.py
-# https://github.com/tbug/aiochannel
-# https://github.com/aio-libs/aiojobs
-# https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.run_in_executor
+asyncio.get_event_loop().run_until_complete(main())
