@@ -32,21 +32,18 @@ class Package():
         self.description = json_data["summary"]
         self.project_url = json_data["project_url"]
 
-    def update_pypi_data(self):
+    async def update_pypi_data(self):
 
         req = requests.get(self.json_data_url)
         if req.status_code == 200:
             try:
                 json_data = json.loads(req.text)["info"]
                 self.update_object_data(json_data)
-                return self, conf.STATUS_OK
             except Exception as e:
                 print("Error for package {}: {}".format(self.name, e))
-                return self, conf.STATUS_ERR
         else:
-            print("Error {} in request for package {}. URL: {}".format(
+            raise Exception("Error {} in request for package {}. URL: {}".format(
                 req.status_code,
                 self.name,
                 self.json_data_url
             ))
-            return self, conf.STATUS_ERR
