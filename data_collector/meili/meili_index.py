@@ -4,7 +4,7 @@ import meilisearch
 # TODO: Error handling
 
 
-def get_or_create_meilisearch_index():
+def get_or_create_index():
 
     if (conf.PYPI_MEILI_URL is None or conf.PYPI_MEILI_KEY is None):
         exit("""

@@ -2,6 +2,21 @@ import conf
 import requests
 import json
 import hashlib
+from bs4 import BeautifulSoup
+
+
+def get_url_list():
+
+    print("Retrieving PyPI package list at {}". format(conf.SIMPLE_API_URL))
+    pkg_list_response = requests.get(conf.SIMPLE_API_URL)
+    soup = BeautifulSoup(pkg_list_response.text, "html.parser")
+    all_pkg_list = soup.find_all('a')[conf.pkg_list_offset:]
+    if conf.pkg_cnt_limit:
+        all_pkg_list = soup.find_all('a')[:conf.pkg_cnt_limit]
+    print("PyPI package list retrieved. {} items found.".format(
+        len(all_pkg_list)
+    ))
+    return all_pkg_list
 
 
 class Package():
@@ -40,10 +55,19 @@ class Package():
                 json_data = json.loads(req.text)["info"]
                 self.update_object_data(json_data)
             except Exception as e:
-                print("Error for package {}: {}".format(self.name, e))
+                print("\tError for package {}: {}".format(self.name, e))
         else:
-            print("Error {} in request for package {}. URL: {}".format(
-                req.status_code,
-                self.name,
-                self.json_data_url
-            ))
+            if conf.SHOW_PYPI_HTTP_ERRORS:
+                print("\tError {} in request for package {}. URL: {}".format(
+                    req.status_code,
+                    self.name,
+                    self.json_data_url
+                ))
+
+    async def single_pkg_request(self, channel):
+
+        try:
+            await self.update_pypi_data()
+            await channel.put(self)
+        except Exception:
+            await channel.put(None)
