@@ -4,10 +4,10 @@ import os
 pkg_count_limit = None
 
 # Set the size of the batch that will be treated by MeiliSearch
-pkg_indexing_batch_size = 100
+pkg_indexing_batch_size = 500
 
 # Set the offset to start treateing package list at a given index
-pkg_list_offset = 0
+pkg_list_offset = 220000
 
 # MeiliSearch params
 INDEX_UUID = "TEST_ASYNCIO"

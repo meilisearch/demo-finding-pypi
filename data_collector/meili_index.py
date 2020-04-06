@@ -27,14 +27,15 @@ def get_or_create_meilisearch_index():
         print("ERROR: Couldn't get index", e)
     return None
 
+
 def index_packages(pkg_to_index, index):
+
     try:
         pkgs = []
         for pkg in pkg_to_index:
             pkgs.append(pkg.__dict__)
-        # print(pkgs)
         resp = index.add_documents(pkgs)
-        # print(resp)
+        print("MEILI server response", resp)
     except Exception as e:
         print("ERROR INDEXING:", e)
         return 0

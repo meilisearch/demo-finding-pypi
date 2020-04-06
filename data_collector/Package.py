@@ -42,7 +42,7 @@ class Package():
             except Exception as e:
                 print("Error for package {}: {}".format(self.name, e))
         else:
-            raise Exception("Error {} in request for package {}. URL: {}".format(
+            print("Error {} in request for package {}. URL: {}".format(
                 req.status_code,
                 self.name,
                 self.json_data_url
