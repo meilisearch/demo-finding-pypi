@@ -4,9 +4,12 @@ import os
 pkg_cnt_limit = None
 
 # Set the size of the batch that will be treated by MeiliSearch
-pkg_indexing_batch_size = 100
+pkg_indexing_batch_size = 1000
 
-# Set the offset to start treateing package list at a given index
+# Set the scheduler number of concurrent tasks
+scheduler_max_tasks = 100
+
+# Set the offset to start treating the package list
 pkg_list_offset = 0
 
 # MeiliSearch params

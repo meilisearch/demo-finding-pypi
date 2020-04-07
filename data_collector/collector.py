@@ -10,15 +10,25 @@ async def handle_package_loop(channel, pkg_list_size, index):
 
     all_pkg = []
     indexed_counter = 0
-
     pkg_count = 0
+
     async for pkg in channel:
         pkg_count += 1
         if pkg is not None:
             all_pkg.append(pkg)
 
-        # Handle a batch
-        if len(all_pkg) >= conf.pkg_indexing_batch_size:
+        # Check if all packages are treated and handle last batch
+        if pkg_count == pkg_list_size \
+                or (conf.pkg_cnt_limit and pkg_count >= conf.pkg_cnt_limit):
+            indexed_counter += meili.index_packages(all_pkg, index)
+            print("{}: {}".format(
+                "Total packages sent to MeiliSearch Index",
+                indexed_counter
+            ))
+            break
+
+        # Handle a single batch
+        elif len(all_pkg) >= conf.pkg_indexing_batch_size:
             batch = all_pkg[:conf.pkg_indexing_batch_size]
             all_pkg = all_pkg[conf.pkg_indexing_batch_size:]
             indexed_counter += meili.index_packages(batch, index)
@@ -26,18 +36,7 @@ async def handle_package_loop(channel, pkg_list_size, index):
                 "Total packages sent to MeiliSearch Index",
                 indexed_counter
             ))
-
-        # Handle last batch
-        elif pkg_count == pkg_list_size \
-                or (conf.pkg_cnt_limit and pkg_count >= conf.pkg_cnt_limit):
-            indexed_counter += meili.index_packages(all_pkg, index)
-            print("{}: {}".format(
-                "Total packages sent to MeiliSearch Index",
-                indexed_counter
-            ))
-            channel.close()
-            break
-
+    channel.close()
 
 
 async def main():
@@ -47,9 +46,9 @@ async def main():
     if index is None:
         exit("\tERROR: Couldn't create a Meilisearch index")
 
-    # Create a Create an Asynchronous scheduler and channel
+    # Create an Asynchronous scheduler and channel
     scheduler = await aiojobs.create_scheduler()
-    scheduler._limit = conf.pkg_indexing_batch_size
+    scheduler._limit = conf.scheduler_max_tasks
     channel = Channel(loop=asyncio.get_event_loop())
 
     pkg_list = pypi.get_url_list()

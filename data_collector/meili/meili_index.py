@@ -1,8 +1,6 @@
 import conf
 import meilisearch
 
-# TODO: Error handling
-
 
 def get_or_create_index():
 
