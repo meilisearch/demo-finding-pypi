@@ -10,9 +10,9 @@ def get_url_list():
     print("Retrieving PyPI package list at {}". format(conf.SIMPLE_API_URL))
     pkg_list_response = requests.get(conf.SIMPLE_API_URL)
     soup = BeautifulSoup(pkg_list_response.text, "html.parser")
-    all_pkg_list = soup.find_all('a')[conf.pkg_list_offset:]
-    if conf.pkg_cnt_limit:
-        all_pkg_list = soup.find_all('a')[:conf.pkg_cnt_limit]
+    all_pkg_list = soup.find_all('a')[conf.PKG_LIST_OFFSET:]
+    if conf.PKG_CNT_LIMIT:
+        all_pkg_list = soup.find_all('a')[:conf.PKG_CNT_LIMIT]
     print("PyPI package list retrieved. {} items found.".format(
         len(all_pkg_list)
     ))

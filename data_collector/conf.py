@@ -1,16 +1,16 @@
 import os
 
 # Set pkg_count_limit to None for no limit
-pkg_cnt_limit = None
+PKG_CNT_LIMIT = None
 
 # Set the size of the batch that will be treated by MeiliSearch
-pkg_indexing_batch_size = 1000
+PKG_INDEXING_BATCH_SIZE = 1000
 
 # Set the scheduler number of concurrent tasks
-scheduler_max_tasks = 100
+SCHEDULER_MAX_TASKS = 100
 
 # Set the offset to start treating the package list
-pkg_list_offset = 0
+PKG_LIST_OFFSET = 0
 
 # MeiliSearch params
 INDEX_UUID = "PYPIPKG"

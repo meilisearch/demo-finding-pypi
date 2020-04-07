@@ -19,7 +19,7 @@ async def handle_package_loop(channel, pkg_list_size, index):
 
         # Check if all packages are treated and handle last batch
         if pkg_count == pkg_list_size \
-                or (conf.pkg_cnt_limit and pkg_count >= conf.pkg_cnt_limit):
+                or (conf.PKG_CNT_LIMIT and pkg_count >= conf.PKG_CNT_LIMIT):
             indexed_counter += meili.index_packages(all_pkg, index)
             print("{}: {}".format(
                 "Total packages sent to MeiliSearch Index",
@@ -28,9 +28,9 @@ async def handle_package_loop(channel, pkg_list_size, index):
             break
 
         # Handle a single batch
-        elif len(all_pkg) >= conf.pkg_indexing_batch_size:
-            batch = all_pkg[:conf.pkg_indexing_batch_size]
-            all_pkg = all_pkg[conf.pkg_indexing_batch_size:]
+        elif len(all_pkg) >= conf.PKG_INDEXING_BATCH_SIZE:
+            batch = all_pkg[:conf.PKG_INDEXING_BATCH_SIZE]
+            all_pkg = all_pkg[conf.PKG_INDEXING_BATCH_SIZE:]
             indexed_counter += meili.index_packages(batch, index)
             print("{}: {}".format(
                 "Total packages sent to MeiliSearch Index",
@@ -41,14 +41,14 @@ async def handle_package_loop(channel, pkg_list_size, index):
 
 async def main():
 
-    # Create a Meilisearch index
+    # Create a MeiliSearch index
     index = meili.get_or_create_index()
     if index is None:
         exit("\tERROR: Couldn't create a Meilisearch index")
 
     # Create an Asynchronous scheduler and channel
     scheduler = await aiojobs.create_scheduler()
-    scheduler._limit = conf.scheduler_max_tasks
+    scheduler._limit = conf.SCHEDULER_MAX_TASKS
     channel = Channel(loop=asyncio.get_event_loop())
 
     pkg_list = pypi.get_url_list()
