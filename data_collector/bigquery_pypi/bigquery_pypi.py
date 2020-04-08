@@ -8,7 +8,7 @@ table_prefix_date = date.strftime("%Y%m")
 downloads_file = "data_collector/bigquery_pypi/data/downloads_{}.pkl".format(table_prefix_date)
 
 
-def get_most_downloaded_pkgs(limit=100000, offset=None):
+def get_most_downloaded_pkgs(limit=200000, offset=None):
 
     downloads_dict = {}
     client = bigquery.Client()
@@ -16,7 +16,7 @@ def get_most_downloaded_pkgs(limit=100000, offset=None):
     sql_request = "SELECT file.project AS name, COUNT(*) AS download_count, \
     FROM `the-psf.pypi.downloads{}*` \
     GROUP BY name \
-    HAVING download_count>100 \
+    HAVING download_count>50 \
     ORDER BY download_count DESC".format(table_prefix_date)
     if limit is not None:
         sql_request += " LIMIT {}".format(limit)
@@ -30,7 +30,7 @@ def get_most_downloaded_pkgs(limit=100000, offset=None):
     return downloads_dict
 
 
-def get_or_create_downloads_dict_from_file():
+def downloads_dict_from_file():
 
     if os.path.isfile(downloads_file):
         f = open(downloads_file)
@@ -47,7 +47,7 @@ def get_or_create_downloads_dict_from_file():
     with open(downloads_file, 'rb') as f:
         dict = pickle.load(f)
         print("Found downloads data for {} packages".format(len(dict)))
-        return
+        return dict
 
 
 if __name__ == "__main__":
