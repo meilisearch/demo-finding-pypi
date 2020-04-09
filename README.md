@@ -1,7 +1,20 @@
-# finding-pypi
-WIP: Alternative search bar for PyPI packages
+# MeiliSearch finds PyPI packages
 
-[proper README.md coming]  
+A [new experience of search](https://meilisearch.github.io/finding-pypi) to find your favorite python packages 🎉
+
+Search by package name or by keywords.
+
+TODO: PyPI DEMO PENDING (rubygems placeholder)
+[![rubygems demo gif](https://raw.githubusercontent.com/meilisearch/finding-rubygems/master/misc/rubygems.gif)](https://meilisearch.github.io/finding-pypi)
+
+The search is powered by [MeiliSearch](https://github.com/meilisearch/MeiliSearch), the open-source and instant search engine.
+
+# See also
+
+- Finding [Rubygems](https://rubygems.meilisearch.com/), for Ruby  
+- Finding [Crates](https://crates.meilisearch.com/), for Rust  
+
+# Developer environment
 
 ## Collect packages info and index to MeiliSearch:
 
