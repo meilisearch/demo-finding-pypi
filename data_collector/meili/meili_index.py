@@ -22,6 +22,9 @@ def get_or_create_index():
                 "rankingRules": [
                     "typo",
                     "desc(fame)",
+                    "proximity",
+                    "attribute",
+                    "exactness",
                     "desc(downloads)"
                 ],
                 "searchableAttributes": [
