@@ -39,9 +39,15 @@ function searchMeili (query) {
             }
         }
     };
-    xhttp.open("GET", MEILI_SEARCH_URL + "?q=" + query + "&attributesToHighlight=*&limit=8", true);
+    xhttp.open("POST", MEILI_SEARCH_URL, true);
+    let body = {
+        q: query,
+        attributesToHighlight: ['*'],
+        limit: 8
+    }
     xhttp.setRequestHeader("X-Meili-API-Key", PYPI_MEILI_PUBLIC_KEY)
-    xhttp.send();
+    xhttp.setRequestHeader("Content-Type", 'application/json')
+    xhttp.send(JSON.stringify(body));
 }
 
 function handleResults(results, resultsField) {
